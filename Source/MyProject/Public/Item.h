@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,19 +8,32 @@ UCLASS()
 class MYPROJECT_API AItem : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	AItem();
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Components")
 	USceneComponent* SceneRoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
 	UStaticMeshComponent* StaticMeshComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Properties")
+	float RotationSpeed;
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	// 함수를 블루프린트에서 호출 가능하도록 설정
+	UFUNCTION(BlueprintCallable, Category = "Item|Actions")
+	void ResetActorPosition();
+
+	// 블루프린트에서 값만 반환하도록 설정
+	UFUNCTION(BlueprintPure, Category = "Item|Properties")
+	float GetRotationSpeed() const;
+
+	// C++에서 호출되지만 구현은 블루프린트에서 수행
+	UFUNCTION(BlueprintImplementableEvent, Category = "Item|Event")
+	void OnItemPickedUp();
 };
-//생성자 - 메모리에 생김, 딱 한번 호출
-//PostInitializecomponents() - 컴포넌트가 완성된 직후 호출. 컴포넌트끼리 데이터 주고받기, 상호작용
-//BeginPlay() - 배치(Spawn)이후
-//Destroyed() - 삭제되기 직전 호출
-//EndPlay() - 게임 종료ㅡ 파괴(Desrtoyed()), 레벨 전환

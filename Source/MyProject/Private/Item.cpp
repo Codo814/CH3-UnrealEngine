@@ -3,30 +3,41 @@
 AItem::AItem()
 {
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
-
 	SetRootComponent(SceneRoot);
 
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMeshComp->SetupAttachment(SceneRoot);
 
-		static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Resources/Props/SM_Star_B.SM_Star_B"));
-		if (MeshAsset.Succeeded()) {
-			StaticMeshComp->SetStaticMesh(MeshAsset.Object);
-		}
-
-		static ConstructorHelpers::FObjectFinder<UMaterial> MaterialAsset(TEXT("/Game/Resources/Materials/M_Metal_Gold.M_Metal_Gold"));
-		if (MaterialAsset.Succeeded()) {
-			StaticMeshComp->SetMaterial(0, MaterialAsset.Object);
-		}
+	PrimaryActorTick.bCanEverTick = true;
+	RotationSpeed = 90.0f;
 }
 
-void AItem::BeginPlay() {
+void AItem::BeginPlay()
+{
 	Super::BeginPlay();
-	SetActorLocation(FVector(300.0f, 200.0f, 100.0f));
-	SetActorRotation(FRotator(0.0f, 90.0f, 0.0f));
-	SetActorScale3D(FVector(2.0f, 1.0f, 1.0f));
+
+	// 블루프린트에서 구현한 함수를 C++에서 호출함
+	OnItemPickedUp();
 }
 
-void AItem::Tick(float DeltaTime) {
+void AItem::Tick(float DeltaTime)
+{
 	Super::Tick(DeltaTime);
+
+	if (!FMath::IsNearlyZero(RotationSpeed))
+	{
+		AddActorLocalRotation(FRotator(0.0f, RotationSpeed * DeltaTime, 0.0f));
+	}
+}
+
+// BlueprintCallable 함수 구현
+void AItem::ResetActorPosition()
+{
+	// (0, 0, 0) 위치로 되돌립니다.
+	SetActorLocation(FVector::ZeroVector);
+}
+
+float AItem::GetRotationSpeed() const
+{
+	return RotationSpeed;
 }
